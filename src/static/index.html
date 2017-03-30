@@ -4,10 +4,136 @@
     <meta name="referrer" content="always" />
     <link media="all" rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" >
     <link media="all" rel="stylesheet" href="stylesheets/react.css" >
+    <script src="//d3js.org/d3.v4.min.js"></script>
+    <script src="https://momentjs.com/downloads/moment.js"></script>
+    <style>
+</style>
   </head>
   <body>
-    <div id="app"></div>
-    <script type="text/javascript" src="js/vendor.js" charset="utf-8"></script>
-    <script type="text/javascript" src="js/app.js" charset="utf-8"></script>
+    <div id="app">
+      <?xml version="1.0" encoding="UTF-8"?>
+<svg class="chart" width="875" height="560"></svg>
+    </div>
+    <script >
+      const m = moment()
+
+      const thirtyDaysAgo = m.format('YYYY-MM-DD')
+      const sixtyDaysAgo = m.add(-30, 'days').format('YYYY-MM-DD')
+
+      const apiPrefix = readApiPrefix()
+
+      const thisMonth = `${apiPrefix}/1/user/-/body/weight/date/${thirtyDaysAgo}/30d.json`
+      const lastMonth = `${apiPrefix}/1/user/-/body/weight/date/${sixtyDaysAgo}/30d.json`
+
+      const thisMonthP = window.fetch(thisMonth, {credentials: 'include'}).then(r => r.json())
+      const lastMonthP = window.fetch(lastMonth, {credentials: 'include'}).then(r => r.json())
+
+      Promise.all([thisMonthP, lastMonthP])
+        .then(([thisMonthRawData, lastMonthRawData]) => {
+          const rawData = lastMonthRawData['body-weight'].concat(thisMonthRawData['body-weight'])
+          console.log('thisMonthRawData:', thisMonthRawData['body-weight'].map(x => x.dateTime+'=>'+x.value))
+          console.log('lastMonthRawData:', lastMonthRawData['body-weight'].map(x => x.dateTime+'=>'+x.value))
+          console.log('rawData:', rawData.map(x => x.dateTime+'=>'+x.value))
+          drawGraph(rawData.map(x => ({date: d3.isoParse(x.dateTime), weight: +x.value})))
+        })
+
+      function drawGraph (data) {
+        // const dateToWeight = rawData.reduce((p, c) => {
+        //   p[c.date] = c.weight;
+        //   return p
+        // }, {})
+        // var parseTime = d3.isoParse
+        // const data = Object.keys(dateToWeight).map(k => ({date: parseTime(k), weight: dateToWeight[k]}))
+        data.sort((a, b) => a.date - b.date)
+
+        for(let i=0; i<data.length; i++) {
+          let start = i-30
+          if (start < 0) start = 0
+          let size = (i - start) + 1
+          let values = []
+          let weightingF = 1 / (size + 1)
+          let weighting = weightingF
+          console.log('weighting:',weighting)
+          for(let s=start; s<=i; s++) {
+            values.push(data[s].weight * weighting)
+            weighting += weightingF
+          }
+
+          let sum = values.reduce((p, c) => p + c, 0)
+          console.log('sum:', sum)
+
+          data[i].average = sum / (size/2)
+        }
+        console.log('data:', data)
+        data.splice(0, 30)
+        // const data = Object.keys(dateToWeight).map(k => dateToWeight[k])
+
+        var svg = d3.select(".chart"),
+            margin = {top: 20, right: 20, bottom: 30, left: 50},
+            width = +svg.attr("width") - margin.left - margin.right,
+            height = +svg.attr("height") - margin.top - margin.bottom,
+            g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+        var x = d3.scaleTime()
+            .rangeRound([0, width]);
+
+        var y = d3.scaleLinear()
+            .rangeRound([height, 0]);
+
+        var lineA = d3.line()
+            .x(d => x(d.date))
+            .y(d => y(d.weight))
+
+        var lineB = d3.line()
+            .curve(d3.curveBasis)
+            .x(d => x(d.date))
+            .y(d => y(d.average))
+
+        x.domain(d3.extent(data, function(d) { return d.date; }));
+        y.domain(d3.extent(data, function(d) { return d.weight; }));
+
+        g.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x))
+
+        g.append("g")
+          .call(d3.axisLeft(y))
+          .append("text")
+            .attr("fill", "#000")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", "0.71em")
+            .attr("text-anchor", "end")
+            .text("Weight (Kg)");
+
+        g.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", "steelblue")
+            .attr("stroke-linejoin", "round")
+            .attr("stroke-linecap", "round")
+            .attr("stroke-width", 1.5)
+            .attr("d", lineA);
+
+        g.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", "red")
+            .attr("stroke-linejoin", "round")
+            .attr("stroke-linecap", "round")
+            .attr("stroke-width", 2)
+            .attr("d", lineB);
+      }
+
+    function readApiPrefix () {
+      if (window.location.hostname.endsWith('dev')) {
+        return 'http://api-fitbit-com.auth.codeite.dev'
+      } else if (window.location.hostname.endsWith('net')) {
+        return 'https://api-fitbit-com.auth.codeite.net'
+      }
+    }
+
+    </script>
   </body>
 </html>
