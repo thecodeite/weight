@@ -2,7 +2,7 @@ test:
   override:
     - ENV=live npm run build
     
-  push_to_server:
-    branch: master
-    commands:
-      - rsync -rvz dist-live/ circleci@helium.codeite.net:/home/sam/webs/test-apps.codeite.net/static/weight/
+push_to_server:
+  branch: master
+  commands:
+    - rsync -rvz dist-live/ circleci@helium.codeite.net:/home/sam/webs/test-apps.codeite.net/static/weight/
