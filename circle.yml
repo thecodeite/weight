@@ -1,4 +1,7 @@
-deployment:
+test:
+  override:
+    - ENV=live npm run build
+    
   push_to_server:
     branch: master
     commands:
