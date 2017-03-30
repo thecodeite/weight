@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "webpack --watch & http-server dist-local -p 4849",
     "test": "echo 'No tests yet'",
-    "build": "rm -rf dist-live/* & cp -r src/static/* dist-live/",
+    "build": "mkdir dist-live & cp -r src/static/* dist-live/",
     "watch": "webpack --watch"
   },
   "standard": {
