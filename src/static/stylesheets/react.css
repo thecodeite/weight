@@ -1,0 +1,140 @@
+* {
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+.headerBar {
+  display: flex;
+  background-color: #ececff;
+  border-top: 1px solid #bcbcff;
+  border-bottom: 1px solid #bcbcff;
+}
+
+.addTaskBar {
+  display: flex;
+}
+
+.addTaskBar .dates {
+  display: block;
+}
+
+.addTaskBar .buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.datePil {
+  display: inline-block;
+  background-color: #5656ff;
+  border: 1px soild white;
+  color: white;
+  padding: 2px 5px;
+  margin: 3px;
+  border-radius: 8px;  
+}
+
+.headerBar h1 {
+  padding: 1px 1em;
+}
+
+.headerBar .taskManager table{
+  background-color: white;
+  position: absolute;
+  padding: 0.5em;
+  z-index: 10;
+}
+
+.timeslip {
+  display: flex;
+}
+
+.timeslip .timeslip-delete {
+  margin-top: 2px;
+  margin-right: 2px;
+  cursor: pointer;
+}
+
+.timeslip .timeslip-hours {
+  margin-left: auto;
+}
+
+.day .day-timeslips {
+  height: 3em;
+  overflow-y: auto;
+}
+
+.month {
+  border: 1px solid lightgrey;
+}
+
+.week {
+  display: flex;
+}
+
+.day {
+  width: calc(100% / 6);
+  border: 1px solid lightgrey;
+  margin: -1 -1 0 0;
+  padding: 3.5px
+}
+
+label.day {
+  font-weight: initial;
+}
+
+.day:hover {
+  border: 1px solid grey;
+  z-index: 2;
+}
+
+.day.selected {
+  border: 3px solid grey;
+  z-index: 1;
+  padding: 1.5px
+}
+
+.day.complete {
+  background-color: #dff0d8
+}
+
+.day.short {
+  background-color: #f2dede;
+}
+
+.day.today.weekend,
+.day.today {
+  background-color: #f5f5f5;
+  color: navy;
+}
+
+.day-total {
+  display: flex;
+}
+
+.day-total .day-total-hours {
+  margin-left: auto;
+  font-weight: bold;
+}
+
+.day.weekend {
+  width: calc(100% / 12);
+  background-color: #fcf8e3;
+}
+
+.day .day-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+
+
+.day-of-week-label {
+  font-weight: bold;
+}
+
+.taskManager table td {
+  border: 1px solid grey;
+}
+
+a:not([href]) {
+  cursor: pointer;
+}
