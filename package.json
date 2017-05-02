@@ -7,10 +7,9 @@
   },
   "main": "server/app.js",
   "scripts": {
-    "dev": "webpack --watch & http-server dist-local -p 4849",
-    "test": "echo 'No tests yet'",
-    "build": "mkdir dist-live & cp -r src/static/* dist-live/",
-    "watch": "webpack --watch"
+    "build": "rm -rf dist-live && mkdir dist-live && cp -r src/static/* dist/",
+    "publish-test": "npm run build && rsync -avz --delete ./dist/ sam@helium:~/webs/test-apps.codeite.net/static/heart",
+    "publish-live": "npm run build && rsync -avz --delete ./dist/ sam@helium:~/webs/apps.codeite.net/static/heart"
   },
   "standard": {
     "globals": [
